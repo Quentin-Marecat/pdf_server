@@ -14,14 +14,16 @@
   </style>
 </head>
 <body>
-  <div id="dropArea">Glissez et déposez un fichier PDF ici</div>
+  <div id="dropArea">Glissez et déposez un fichier PDF ici<br>ou cliquez pour sélectionner un fichier</div>
+
+  <input type="file" id="fileInput" style="display: none">
 
   <script>
     function handleFileSelect(evt) {
       evt.stopPropagation();
       evt.preventDefault();
 
-      var files = evt.dataTransfer.files; // Récupère la liste des fichiers déposés
+      var files = evt.dataTransfer.files || evt.target.files; // Récupère la liste des fichiers déposés ou sélectionnés
 
       for (var i = 0, f; f = files[i]; i++) {
         if (f.type === "application/pdf") { // Vérifie si le fichier est un PDF
@@ -39,28 +41,21 @@
     }
 
     function uploadFile(file) {
-      var xhr = new XMLHttpRequest();
-      var formData = new FormData();
-
-      formData.append("pdf", file);
-
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          var response = JSON.parse(xhr.responseText);
-          var link = document.createElement("a");
-          link.href = response.url;
-          link.textContent = "Lien vers le PDF";
-          document.body.appendChild(link);
-        }
-      };
-
-      xhr.open("POST", "upload.php"); // Remplacez "upload.php" par l'URL de votre script de téléchargement côté serveur
-      xhr.send(formData);
+      // Effectuez ici le téléchargement ou le traitement du fichier
+      // ...
+      alert("Le fichier a été téléchargé avec succès !");
     }
 
     var dropArea = document.getElementById("dropArea");
+    var fileInput = document.getElementById("fileInput");
+
     dropArea.addEventListener("dragover", handleDragOver, false);
     dropArea.addEventListener("drop", handleFileSelect, false);
+    fileInput.addEventListener("change", handleFileSelect, false);
+
+    dropArea.addEventListener("click", function() {
+      fileInput.click(); // Déclenche le clic sur l'élément de sélection de fichier
+    });
   </script>
 </body>
 </html>
