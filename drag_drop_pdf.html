@@ -41,9 +41,24 @@
     }
 
     function uploadFile(file) {
-      // Effectuez ici le téléchargement ou le traitement du fichier
-      // ...
-      alert("Le fichier a été téléchargé avec succès !");
+      var xhr = new XMLHttpRequest();
+      var formData = new FormData();
+
+      formData.append("pdf", file);
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          var link = document.createElement("a");
+          link.href = response.url;
+          link.textContent = "Ouvrir le PDF";
+          link.target = "_blank";
+          document.body.appendChild(link);
+        }
+      };
+
+      xhr.open("POST", "upload.php"); // Remplacez "upload.php" par l'URL de votre script de téléchargement côté serveur
+      xhr.send(formData);
     }
 
     var dropArea = document.getElementById("dropArea");
@@ -59,3 +74,4 @@
   </script>
 </body>
 </html>
+
