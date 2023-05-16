@@ -23,7 +23,7 @@
       evt.stopPropagation();
       evt.preventDefault();
 
-      var files = evt.dataTransfer.files || evt.target.files; // Récupère la liste des fichiers déposés ou sélectionnés
+      var files = evt.target.files || evt.dataTransfer.files; // Récupère la liste des fichiers sélectionnés ou déposés
 
       for (var i = 0, f; f = files[i]; i++) {
         if (f.type === "application/pdf") { // Vérifie si le fichier est un PDF
