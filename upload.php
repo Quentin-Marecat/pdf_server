@@ -1,8 +1,21 @@
 <?php
-$targetDirectory = "uploads/"; // Répertoire où les fichiers PDF seront stockés
-$targetFile = $targetDirectory . basename($_FILES["pdf"]["name"]);
+$target_dir = "uploads/";
+$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 $uploadOk = 1;
-$fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+$fileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
-// Vérifie si le fichier est un fichier PDF
-if ($fileType !== "pdf") {
+if(isset($_POST["submit"])) {
+    if($fileType == "pdf") {
+        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+            echo "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
+            echo "The URL of the file is: http://yourdomain.com/" . $target_file;
+        } else {
+            echo "Sorry, there was an error uploading your file.";
+        }
+    } else {
+        echo "Sorry, only PDF files are allowed.";
+        $uploadOk = 0;
+    }
+}
+?>
+

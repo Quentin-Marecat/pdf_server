@@ -1,77 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Drag and Drop PDF</title>
-  <style>
-    #dropArea {
-      width: 300px;
-      height: 200px;
-      border: 2px dashed #ccc;
-      line-height: 200px;
-      text-align: center;
-      font-size: 24px;
-    }
-  </style>
+    <title>Upload PDF</title>
+    <style>
+        #drop_zone {
+            background-color: #EEE; 
+            border: #999 1px solid;
+            width: 290px; 
+            height: 200px;
+            padding: 8px;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
-  <div id="dropArea">Glissez et déposez un fichier PDF ici<br>ou cliquez pour sélectionner un fichier</div>
+    <script>
+        function handleFileSelect(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
 
-  <input type="file" id="fileInput" style="display: none">
+            var files = evt.dataTransfer.files;
 
-  <script>
-    function handleFileSelect(evt) {
-      evt.stopPropagation();
-      evt.preventDefault();
-
-      var files = evt.target.files || evt.dataTransfer.files; // Récupère la liste des fichiers sélectionnés ou déposés
-
-      for (var i = 0, f; f = files[i]; i++) {
-        if (f.type === "application/pdf") { // Vérifie si le fichier est un PDF
-          uploadFile(f);
-        } else {
-          alert("Veuillez sélectionner un fichier PDF.");
+            var output = [];
+            for (var i = 0, f; f = files[i]; i++) {
+                output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                            f.size, ' bytes, last modified: ',
+                            f.lastModifiedDate.toLocaleDateString(), '</li>');
+            }
+            document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
         }
-      }
-    }
 
-    function handleDragOver(evt) {
-      evt.stopPropagation();
-      evt.preventDefault();
-      evt.dataTransfer.dropEffect = "copy"; // Indique que l'élément peut être copié
-    }
-
-    function uploadFile(file) {
-      var xhr = new XMLHttpRequest();
-      var formData = new FormData();
-
-      formData.append("pdf", file);
-
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          var response = JSON.parse(xhr.responseText);
-          var link = document.createElement("a");
-          link.href = response.url;
-          link.textContent = "Ouvrir le PDF";
-          link.target = "_blank";
-          document.body.appendChild(link);
+        function handleDragOver(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = 'copy';
         }
-      };
 
-      xhr.open("POST", "upload.php"); // Remplacez "upload.php" par l'URL de votre script de téléchargement côté serveur
-      xhr.send(formData);
-    }
+        var dropZone = document.getElementById('drop_zone');
+        dropZone.addEventListener('dragover', handleDragOver, false);
+        dropZone.addEventListener('drop', handleFileSelect, false);
+    </script>
+    <div id="drop_zone">Drop files here</div>
+    <output id="list"></output>
 
-    var dropArea = document.getElementById("dropArea");
-    var fileInput = document.getElementById("fileInput");
-
-    dropArea.addEventListener("dragover", handleDragOver, false);
-    dropArea.addEventListener("drop", handleFileSelect, false);
-    fileInput.addEventListener("change", handleFileSelect, false);
-
-    dropArea.addEventListener("click", function() {
-      fileInput.click(); // Déclenche le clic sur l'élément de sélection de fichier
-    });
-  </script>
+    <form action="upload.php" method="post" enctype="multipart/form-data">
+        <input type="file" name="fileToUpload" id="fileToUpload">
+        <input type="submit" value="Upload PDF" name="submit">
+    </form>
 </body>
 </html>
-
