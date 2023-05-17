@@ -10,7 +10,7 @@ def deploy_to_heroku():
     subprocess.run(["git","commit","-m","'Q : herku deploy'"])
     subprocess.run(["git","push"])
     subprocess.run(["heroku", "git:remote", "-a", app_name])
-    subprocess.run(["git", "push", f"heroku main"])
+    subprocess.run(["git", "push", "heroku","main"])
 
 if __name__ == "__main__":
     deploy_to_heroku()

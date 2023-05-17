@@ -1,9 +1,8 @@
 <?php
-$target_dir = "uploads/";
+$target_dir = "";
 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);
 $filename = basename($_FILES["fileToUpload"]["name"]);
-$url = 'https://pdf-drag-drop.herokuapp.com/uploads/' . $filename;
-echo $url;
+echo '<a href="' . $url_pdf . $filename'">Cliquez ici pour télécharger le PDF</a>';
 ?>
 
