@@ -6,6 +6,9 @@ import subprocess
 
 def deploy_to_heroku():
     app_name = "pdf-drag-drop"  # Change this to your desired app name
+    subprocess.run(["git",'add','.'])
+    subprocess.run(["git","commit","-m","'Q : herku deploy'"])
+    subprocess.run(["git","push"])
     subprocess.run(["heroku", "git:remote", "-a", app_name])
     subprocess.run(["git", "push", f"heroku main"])
 
