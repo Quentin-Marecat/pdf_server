@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['pdf_file'])) {
         move_uploaded_file($file['tmp_name'], $destination);
         
         // Récupérer l'URL du fichier
-        $url_pdf = 'https://pdf-drag-drop.herokuapp.com/' . $file['name'];
+        $url_pdf = 'https://pdf-drag-drop.herokuapp.com/uploads' . $file['name'];
         
         // Afficher l'URL du fichier
         echo 'Lien vers le PDF : <a href="' . $url_pdf . '">' . $url_pdf . '</a>';

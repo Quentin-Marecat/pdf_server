@@ -1,52 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Upload PDF</title>
-    <style>
-        #drop_zone {
-            background-color: #EEE; 
-            border: #999 1px solid;
-            width: 290px; 
-            height: 200px;
-            padding: 8px;
-            font-size: 18px;
-        }
-    </style>
+    <title>Téléchargement et exécution</title>
 </head>
 <body>
+    <div id="dropzone">
+        <p>Glissez et déposez un fichier PDF ici</p>
+        <p>ou</p>
+        <input type="file" id="file-input">
+    </div>
+    <button id="start-button">Démarrer le processus</button>
+
     <script>
-        function handleFileSelect(evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropzone = document.getElementById('dropzone');
+            const fileInput = document.getElementById('file-input');
+            const startButton = document.getElementById('start-button');
 
-            var files = evt.dataTransfer.files;
+            // Fonction pour gérer le téléchargement du fichier
+            const handleFileUpload = (file) => {
+                const formData = new FormData();
+                formData.append('pdf_file', file);
 
-            var output = [];
-            for (var i = 0, f; f = files[i]; i++) {
-                output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                            f.size, ' bytes, last modified: ',
-                            f.lastModifiedDate.toLocaleDateString(), '</li>');
-            }
-            document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-        }
+                // Effectuer une requête AJAX pour télécharger le fichier vers un répertoire local
+                fetch('/index.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(url => {
+                    console.log('Fichier téléchargé :', url);
+                    // Exécuter le script Python
+                    fetch('/executer_script_python.php')
+                    .then(response => response.text())
+                    .then(result => {
+                        console.log('Résultat de l\'exécution du script Python :', result);
+                        // Afficher le lien après avoir effectué le processus
+                        const linkElement = document.createElement('a');
+                        linkElement.href = 'https://pdf-drag-drop.herokuapp.com/uploads/';
+                        linkElement.innerText = 'https://pdf-drag-drop.herokuapp.com/uploads/';
+                        document.body.appendChild(linkElement);
+                    })
+                    .catch(error => console.error('Erreur lors de l\'exécution du script Python :', error));
+                })
+                .catch(error => console.error('Erreur lors du téléchargement du fichier :', error));
+            };
 
-        function handleDragOver(evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            evt.dataTransfer.dropEffect = 'copy';
-        }
+            // Fonction pour gérer l'événement de dépôt de fichier
+            const handleDrop = (event) => {
+                event.preventDefault();
+                const file = event.dataTransfer.files[0];
+                handleFileUpload(file);
+            };
 
-        var dropZone = document.getElementById('drop_zone');
-        dropZone.addEventListener('dragover', handleDragOver, false);
-        dropZone.addEventListener('drop', handleFileSelect, false);
+            // Fonction pour gérer l'événement de sélection de fichier
+            const handleFileSelection = () => {
+                const file = fileInput.files[0];
+                handleFileUpload(file);
+            };
+
+            // Événements de glisser-déposer
+            dropzone.addEventListener('dragover', (event) => {
+                event.preventDefault();
+            });
+            dropzone.addEventListener('drop', handleDrop);
+
+            // Événement de sélection de fichier
+            fileInput.addEventListener('change', handleFileSelection);
+
+            // Événement de clic sur le bouton de démarrage
+            startButton.addEventListener('click', () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    handleFileUpload(file);
+                } else {
+                    console.log('Aucun fichier sélectionné.');
+                }
+            });
+        });
     </script>
-    <div id="drop_zone">Drop files here</div>
-    <output id="list"></output>
-
-    <form action="index.php" method="post" enctype="multipart/form-data">
-        <input type="file" name="fileToUpload" id="fileToUpload">
-        <input type="submit" value="Upload PDF" name="submit">
-    </form> 
-    
 </body>
 </html>
