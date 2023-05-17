@@ -1,11 +1,12 @@
 <?php
+error_reporting(E_ALL); ini_set('display_errors', '1');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['pdf_file'])) {
     $file = $_FILES['pdf_file'];
     
     // Vérifier si le fichier a été téléchargé sans erreur
     if ($file['error'] === UPLOAD_ERR_OK) {
         // Définir le chemin de destination du fichier
-        $destination = './' . $file['name'];
+        $destination = '/home/qmarecat/Desktop/others/GPT/pdf_server/' . $file['name'];
         
         // Déplacer le fichier vers le dossier de destination
         move_uploaded_file($file['tmp_name'], $destination);

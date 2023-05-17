@@ -59,11 +59,21 @@
                 handleFileUpload(file);
             };
 
-            // Événements de glisser-déposer
+            // Événement de glisser-déposer
             dropzone.addEventListener('dragover', (event) => {
                 event.preventDefault();
+                dropzone.classList.add('dragover');
             });
-            dropzone.addEventListener('drop', handleDrop);
+            dropzone.addEventListener('dragleave', (event) => {
+                event.preventDefault();
+                dropzone.classList.remove('dragover');
+            });
+            dropzone.addEventListener('drop', (event) => {
+                event.preventDefault();
+                dropzone.classList.remove('dragover');
+                const file = event.dataTransfer.files[0];
+                handleFileUpload(file);
+            });
 
             // Événement de sélection de fichier
             fileInput.addEventListener('change', handleFileSelection);
@@ -79,5 +89,18 @@
             });
         });
     </script>
+
+    <style>
+        #dropzone {
+            width: 200px;
+            height: 150px;
+            border: 2px dashed #ccc;
+            text-align: center;
+            padding: 10px;
+        }
+        #dropzone.dragover {
+            background-color: #f0f0f0;
+        }
+    </style>
 </body>
 </html>
